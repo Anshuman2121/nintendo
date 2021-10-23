@@ -1,36 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <Body background="data/bg.png"> <br>  
-  </div>
-  <script>
-    var gameUrl
-    function myfunction(id1)
-    {
-        var gameUrl = id1
-        document.body.innerHTML = ''
-        var a = document.createElement('div');
-        a.style = "width:800px;height:600px;max-width:100%;margin: auto;";
-        var b = document.createElement('div');
-        b.id = 'game';
-        a.appendChild(b);
-        document.body.appendChild(a);
-        
-        var script = document.createElement('script');
-        script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = 'nes'; EJS_pathtodata = 'data/'; ";
-        document.body.appendChild(script);
-        var script = document.createElement('script');
-        script.src = 'data/loader.js';
-        document.body.appendChild(script);
-    }
-    </script>
-<a href='#' onclick="myfunction('64.nes')">64-in-1</a><br>
 <a href='#' onclick="myfunction('nes/10_Duck Tales.nes')"> 10_Duck Tales.nes </a><br>
 <a href='#' onclick="myfunction('nes/12_Contra (U).nes')"> 12_Contra (U).nes </a><br>
 <a href='#' onclick="myfunction('nes/14_Excite_bike.nes')"> 14_Excite_bike.nes </a><br>
@@ -118,5 +85,3 @@
 <a href='#' onclick="myfunction('nes/Teenage Mutant Ninja Turtles 3 (U).nes')"> Teenage Mutant Ninja Turtles 3 (U).nes </a><br>
 <a href='#' onclick="myfunction('nes/Teenage Mutant Ninja Turtles IV - Turtles in Time (U) [!].smc')"> Teenage Mutant Ninja Turtles IV - Turtles in Time (U) [!].smc </a><br>
 <a href='#' onclick="myfunction('nes/Yie Ar Kung-Fu (V1.4) (J) [p1].nes')"> Yie Ar Kung-Fu (V1.4) (J) [p1].nes </a><br>
-</body>
-</html>
