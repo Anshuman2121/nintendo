@@ -23,4 +23,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ${{secrets.DOCKER_USER}}/nintendoclassics:$(date +%s)
     - name: Docker Push
-      run: docker push ${{secrets.DOCKER_USER}}/nintendoclassics
+      run: docker push ${{secrets.DOCKER_USER}}/nintendoclassics:$(date +%s)
