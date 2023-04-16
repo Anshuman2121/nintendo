@@ -16,7 +16,14 @@
     <title>Nintendo World!</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
+    <style>
+        body {
+            background-image: url('data/bg.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+    </style>
 </head>
 <body>
 
@@ -218,7 +225,6 @@
 	    
   <script>
 var gameUrl;
-
 function myfunction(id1) {
     var gameUrl = id1;
     var extension = id1.split('.').pop();
@@ -228,25 +234,27 @@ function myfunction(id1) {
         var core = 'snes';
     } else {
         var core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
-    };
+    }
 
     document.body.innerHTML = '';
     var a = document.createElement('div');
-    a.style = "width:100%;height:100%;display:flex;justify-content:center;align-items:center;";
+    // Get the width and height of the screen
+    var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    a.style = "width:" + screenWidth + "px;height:" + screenHeight + "px;max-width:100%;margin: auto;";
     var b = document.createElement('div');
     b.id = 'game';
-    b.style = "max-width:100%;max-height:100%;margin:auto;";
     a.appendChild(b);
     document.body.appendChild(a);
 
     var script = document.createElement('script');
-    script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/';";
+    script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; ";
     document.body.appendChild(script);
-
-    var script2 = document.createElement('script');
-    script2.src = 'data/loader.js';
-    document.body.appendChild(script2);
+    var script = document.createElement('script');
+    script.src = 'data/loader.js';
+    document.body.appendChild(script);
 }
+
 
 
 
