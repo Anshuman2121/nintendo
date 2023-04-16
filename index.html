@@ -225,33 +225,38 @@
   
 	    
   <script>
-    var gameUrl
-    function myfunction(id1)
-    {
-        var gameUrl = id1
-        var extension = id1.split('.').pop()
-        if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
-		    var core = 'nes';
-		} else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
-		    var core = 'snes';
-        } else {
-		    var core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
-		};
-        document.body.innerHTML = ''
-        var a = document.createElement('div');
-        a.style = "width:800px;height:600px;max-width:100%;margin: auto;";
-        var b = document.createElement('div');
-        b.id = 'game';
-        a.appendChild(b);
-        document.body.appendChild(a);
-        
-        var script = document.createElement('script');
-        script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; ";
-        document.body.appendChild(script);
-        var script = document.createElement('script');
-        script.src = 'data/loader.js';
-        document.body.appendChild(script);
-    }
+    var gameUrl;
+
+    function myfunction(id1) {
+    var gameUrl = id1;
+    var extension = id1.split('.').pop();
+    if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
+        var core = 'nes';
+    } else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
+        var core = 'snes';
+    } else {
+        var core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
+    };
+
+    document.body.innerHTML = '';
+    var a = document.createElement('div');
+    a.style = "position: absolute; top: 0; left: 0; right: 0; bottom: 0;";
+    var b = document.createElement('div');
+    b.id = 'game';
+    a.appendChild(b);
+    document.body.appendChild(a);
+
+    var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    var script = document.createElement('script');
+    script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; EJS_width = " + screenWidth + "; EJS_height = " + screenHeight + ";";
+    document.body.appendChild(script);
+
+    var script2 = document.createElement('script');
+    script2.src = 'data/loader.js';
+    document.body.appendChild(script2);
+}
+
 
 </script>
 </body>
