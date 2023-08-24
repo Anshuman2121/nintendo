@@ -85,11 +85,23 @@
       </nav>
       <br><br>
       <div id="nesCardContainer" class="card-container" style="margin: 0 auto">
-        <h2>Nes Games</h2> <!-- Heading for NES Games -->
+        <h2>Nes Games</h2> 
       </div>
       <br><br>
       <div id="snesCardContainer" class="card-container" style="margin: 0 auto">
-        <h2>SNES Games</h2> <!-- Heading for SNES Games -->
+        <h2>SNES Games</h2> 
+      </div>
+      <br><br>
+      <div id="n64CardContainer" class="card-container" style="margin: 0 auto">
+        <h2>N64 Games</h2> 
+      </div>
+      <br><br>
+      <div id="sega" class="card-container" style="margin: 0 auto">
+        <h2>SEGA Games</h2> 
+      </div>
+      <br><br>
+      <div id="psx" class="card-container" style="margin: 0 auto">
+        <h2>Playstation Games</h2> 
       </div>
       <script>
         function createClickableCard(imageName, link, containerId) {
@@ -135,6 +147,9 @@
       
         readCSV('games/nes.csv', 'nesCardContainer');
         readCSV('games/snes.csv', 'snesCardContainer');
+        readCSV('games/n64.csv', 'n64CardContainer');
+        readCSV('games/sega.csv', 'sega');
+        readCSV('games/psx.csv', 'psx');
       </script>
       
   
@@ -153,36 +168,49 @@
   
 	    
   <script>
-var gameUrl;
-function myfunction(id1) {
-    var gameUrl = id1;
-    var extension = id1.split('.').pop();
-    if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
-        var core = 'nes';
-    } else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
-        var core = 'snes';
-    } else {
-        var core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
+    var gameUrl;
+    function myfunction(id1) {
+        var gameUrl = id1;
+        var extension = id1.split('.').pop();
+        var core, biosUrl;
+    
+        if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
+            core = 'nes';
+        } else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
+            core = 'snes';
+        } else if (['z64', 'n64'].includes(extension)) {
+            core = 'n64';
+        } else if (['nds', 'gba', 'gb'].includes(extension)) {
+            core = 'gba';
+        } else if (extension === 'md') {
+            core = 'segaCD';
+            biosUrl = 'games/SegaCDbios.bin';
+        } else if (extension === '7z') {
+            core = 'psx';
+            biosUrl = 'games/psxbios.7z';
+        } else {
+            core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
+        }
+    
+        document.body.innerHTML = '';
+        var a = document.createElement('div');
+        // Get the width and height of the screen
+        var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        a.style = "width:" + screenWidth + "px;height:" + screenHeight + "px;max-width:100%;margin: auto;";
+        var b = document.createElement('div');
+        b.id = 'game';
+        a.appendChild(b);
+        document.body.appendChild(a);
+    
+        var script = document.createElement('script');
+        script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = '" + (biosUrl || '') + "'; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; ";
+        document.body.appendChild(script);
+        var script = document.createElement('script');
+        script.src = 'data/loader.js';
+        document.body.appendChild(script);
     }
-
-    document.body.innerHTML = '';
-    var a = document.createElement('div');
-    // Get the width and height of the screen
-    var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    a.style = "width:" + screenWidth + "px;height:" + screenHeight + "px;max-width:100%;margin: auto;";
-    var b = document.createElement('div');
-    b.id = 'game';
-    a.appendChild(b);
-    document.body.appendChild(a);
-
-    var script = document.createElement('script');
-    script.innerHTML = "EJS_player = '#game'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; ";
-    document.body.appendChild(script);
-    var script = document.createElement('script');
-    script.src = 'data/loader.js';
-    document.body.appendChild(script);
-}
-</script>
+    </script>
+    
 </body>
 </html>

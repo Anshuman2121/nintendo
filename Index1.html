@@ -161,6 +161,10 @@ function myfunction(id1) {
         var core = 'nes';
     } else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
         var core = 'snes';
+    } else if (['z64', 'n64'].includes(extension)) {
+        var core = 'n64';
+    } else if (['nds', 'gba', 'gb', 'z64', 'n64'].includes(extension)) {
+        var core = 'gba';
     } else {
         var core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
     }
