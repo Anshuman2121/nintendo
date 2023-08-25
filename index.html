@@ -159,6 +159,17 @@
         var b = document.createElement('div');
         b.id = 'dosbox';
         a.appendChild(b);
+
+        // Create a button to request full screen
+        var btn = document.createElement('button');
+        btn.innerHTML = 'Full Screen';
+        btn.onclick = function () {
+          dosbox.requestFullScreen();
+        };
+
+        btn.style.marginTop = '10px';
+        a.appendChild(btn);
+
         document.body.appendChild(a);
 
         dosbox = new Dosbox({
@@ -172,7 +183,8 @@
           }
         });
         return;
-      } else {
+      }
+      else {
         core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
       }
 
