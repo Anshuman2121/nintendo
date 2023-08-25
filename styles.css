@@ -78,7 +78,7 @@ body {
 
 #snesCardContainer .card,
 #n64CardContainer .card,
-#psx .card {
+#psx .card, #dosbox .card {
     height: calc(16rem * 2 / 3);
 }
 
