@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y42F6Q2CDF"></script>
@@ -24,53 +23,80 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-dark" style="background-color: #654f4f;">
+  <nav class="navbar navbar-dark custom-navbar">
     <div class="container-fluid">
       <span class="navbar-brand h1" style="margin-left: auto; margin-right: auto;">
         <h1 class="display-1"><strong>Nintendo World!</strong></h1>
       </span>
     </div>
   </nav>
+  <nav class="navbar navbar-expand-lg bg-dark">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button">
+        <span class="navbar-toggler-icon flex-row "></span>
+      </button>
+        <ul class="navbar-nav flex-row ">
+          <li class="nav-item">
+            <a class="nav-link active display-7" aria-current="page" href="#nesCardContainer">Nes Games </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link display-7" href="#snesCardContainer">SNES Games  </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link display-7" href="#n64CardContainer">N64 Games  </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link display-7" href="#sega">SEGA Games  </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link display-7" href="#psx">Playstation Games  </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link display-7" href="#dosbox">DOS Games  </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
   <br><br>
   <div id="nesCardContainer" class="card-container" style="margin: 0 auto">
 
-    <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: center; align-items: center;">
+  <nav class="navbar navbar-dark bg-secondary" style="display: flex; justify-content: center; align-items: center;">
       <h2 class="display-5"><strong>Nes Games</strong></h2>
     </nav>
   </div>
   <br><br>
   <div id="snesCardContainer" class="card-container" style="margin: 0 auto">
-    <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: center; align-items: center;">
+    <nav class="navbar navbar-dark bg-secondary" style="display: flex; justify-content: center; align-items: center;">
       <h2 class="display-5"><strong>SNES Games</strong></h2>
     </nav>
   </div>
   <br><br>
   <div id="n64CardContainer" class="card-container" style="margin: 0 auto">
-    <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: center; align-items: center;">
+    <nav class="navbar navbar-dark bg-secondary" style="display: flex; justify-content: center; align-items: center;">
       <h2 class="display-5"><strong>N64 Games</strong></h2>
     </nav>
   </div>
   <br><br>
   <div id="sega" class="card-container" style="margin: 0 auto">
-    <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: center; align-items: center;">
+    <nav class="navbar navbar-dark bg-secondary" style="display: flex; justify-content: center; align-items: center;">
       <h2 class="display-5"><strong>SEGA Games</strong></h2>
     </nav>
   </div>
   <br><br>
   <div id="psx" class="card-container" style="margin: 0 auto">
-    <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: center; align-items: center;">
+    <nav class="navbar navbar-dark bg-secondary" style="display: flex; justify-content: center; align-items: center;">
       <h2 class="display-5"><strong>Playstation Games</strong></h2>
     </nav>
   </div>
   <br><br>
   <div id="dosbox" class="card-container" style="margin: 0 auto">
-    <nav class="navbar navbar-dark bg-dark" style="display: flex; justify-content: center; align-items: center;">
+    <nav class="navbar navbar-dark bg-secondary" style="display: flex; justify-content: center; align-items: center;">
       <h2 class="display-5"><strong>DOS Games</strong></h2>
     </nav>
   </div>
   <br><br>
-
-  <div id='dosbox' style='margin:auto; width:640px; overflow:hidden'></div>
 
   <script>
     function createClickableCard(imageName, link, containerId) {
@@ -114,12 +140,12 @@
       }
     }
 
-    readCSV('games/nes.csv', 'nesCardContainer');
-    readCSV('games/snes.csv', 'snesCardContainer');
-    readCSV('games/n64.csv', 'n64CardContainer');
-    readCSV('games/sega.csv', 'sega');
-    readCSV('games/psx.csv', 'psx');
-    readCSV('games/dos.csv', 'dosbox');
+    readCSV('gameslist/nes.csv', 'nesCardContainer');
+    readCSV('gameslist/snes.csv', 'snesCardContainer');
+    readCSV('gameslist/n64.csv', 'n64CardContainer');
+    readCSV('gameslist/sega.csv', 'sega');
+    readCSV('gameslist/psx.csv', 'psx');
+    readCSV('gameslist/dos.csv', 'dosbox');
   </script>
 
 
@@ -207,6 +233,55 @@
       document.body.appendChild(script);
     }
   </script>
+
+
+<br><br><br>
+<div class="d-flex bd-highlight justify-content-center">
+  <div class="card text-bg-secondary mb-3 custom-card">
+      <div class="card-header text-center">
+          <h3>Contact</h3>
+      </div>
+      <div class="card-body custom-card-body">
+          <div class="container">
+              <div class="row">
+                  <div class="col-lg-8 mx-auto">
+                      <form action="https://formspree.io/f/mknkakjd" role="form" method="POST" autocomplete="on">
+                          <div class="control-group">
+                              <div class="form-group floating-label-form-group controls">
+                                  <input type="text" class="form-control" name="name" placeholder="Name" required>
+                              </div>
+                          </div>
+                          <div class="control-group">
+                              <div class="form-group floating-label-form-group controls">
+                                  <input type="email" class="form-control form-input" placeholder="Email" required>
+                              </div>
+                          </div>
+                          <div class="control-group">
+                              <div class="form-group floating-label-form-group controls">
+                                  <textarea class="form-control" id="message" name="message" rows="5" placeholder="Tell me about your query" required></textarea>
+                              </div>
+                          </div>
+                          <br>
+                          <div>
+                              <input type="text" name="_gotcha" style="display:none">
+                          </div>
+                          <div>
+                              <input type="submit" class="btn btn-primary custom-button" value="Send">
+                              <input type="hidden" name="_subject" value="New submission from Nintendo Website!">
+                          </div>
+                          <br>
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="card-footer text-muted"></div>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1019854/t/1"></script>
+
   <footer class="footer">
     <div class="container">
       <span class="text-muted"> Copyright @ Anshuman Abhishek - 2021 </span>
