@@ -89,7 +89,7 @@ body {
   }
   
   body {
-    background-color: #ADD8E6;
+    background-color: rgb(243, 226, 240);
     background-image:
         linear-gradient(90deg, rgba(255, 255, 255, .2) 50%, transparent 50%),
         linear-gradient(rgba(255, 255, 255, .2) 50%, transparent 50%);
@@ -195,3 +195,15 @@ body {
   .nav-item {
     margin-right: 50px;
   }
+
+  .made-with-love {
+    float: right;
+ /* Adjust this value for spacing */
+  }
+  
+.quote {
+    font-family: 'Great Vibes', cursive;
+    font-size: 36px;
+    font-weight: bold;
+    color: rgb(105, 115, 156);
+}
