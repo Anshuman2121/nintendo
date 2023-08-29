@@ -1,146 +1,111 @@
-fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
-	if (response.ok) {
-		response.text().then(body => {
-			var version = JSON.parse(body);
-			var usingVersion = '0.4.23-05';
-			if (usingVersion != version.current_version) {
-				console.log('Using emulatorjs version ' + usingVersion + ' but the newest version is ' + version.current_version + '\n\nopen https://github.com/ethanaobrien/emulatorjs to update');
-			};
-		});
-	};
-});
-
-if (! window.EJS_pathtodata) {
-	EJS_pathtodata = './'
-}
-var path2Send = EJS_pathtodata
-var finpath = window.location.pathname.split('/').pop();
-var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
-var split3 = finalpath.split('/')
-var split2 = path2Send.split('/')
-var split1 = [ ]
-for (var i=0; i<split3.length; i++) {
-	if (split3[i] != '') {
-		split1.push(split3[i])
-	}
-}
-if (! path2Send.startsWith('/') && path2Send.split('://').length == 1 && path2Send.split('http:').length == 1 && path2Send.split('https:').length == 1) {
-	for (var w=0; w<split2.length; w++) {
-		if (split2[w] == '' || split2[w] == '.') {
-		} else if (split2[w] == '..') {
-			if (split1.length > 0) {
-			var split1 = split1.splice(-1,1)
-		}
-		} else {
-			split1.push(split2[w])
-		}
-	}
-	var path2Send = split1.join('/')
-	if (! path2Send.startsWith('/')) {
-		var path2Send = '/' + path2Send
-	}
-	path2Send = window.location.protocol + '//' + window.location.host + path2Send
-	EJS_pathtodata = path2Send
-}
-if (EJS_pathtodata.startsWith('/')) {
-	EJS_pathtodata = window.location.protocol + '//' + window.location.host + path2Send
-}
-
-if (!EJS_pathtodata.endsWith('/')) {
-	EJS_pathtodata = EJS_pathtodata+'/'
-}
-console.log('Path to data is set to ' + EJS_pathtodata)
-
-
-window.getHeadGameInfo = function(normalFunc, url) {
-	if (! url.startsWith('blob:')) {
-		return normalFunc(url, {})
-	} else {
-		return async function() {
-			//console.log('blob url')
-			var a = await fetch(url)
-			var a = await a.blob()
-			return {headers:{'content-length': a.size, 'content-type': 'text/plain'}}
-		}();
-	}
-}
-
-window.readAsBufferrr = function(fileBlob) {
-    return new Promise(function(resolve, reject) {
-        var reader = new FileReader()
-        reader.onload = function(e) {
-            resolve(e.target.result)
+(async function() {
+    const folderPath = (path) => path.substring(0, path.length - path.split('/').pop().length);
+    const scriptPath = (typeof window.EJS_pathtodata === "string") ? window.EJS_pathtodata : folderPath((new URL(document.currentScript.src)).pathname);
+    if (!scriptPath.endsWith('/')) scriptPath+='/';
+    //console.log(scriptPath);
+    function loadScript(file) {
+        return new Promise(function (resolve, reject) {
+            let script = document.createElement('script');
+            script.src = function() {
+                if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
+                    return EJS_paths[file];
+                } else {
+                    return scriptPath+file;
+                }
+            }();
+            script.onload = resolve;
+            document.head.appendChild(script);
+        })
+    }
+    function loadStyle(file) {
+        return new Promise(function(resolve, reject) {
+            let css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = function() {
+                if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
+                    return EJS_paths[file];
+                } else {
+                    return scriptPath+file;
+                }
+            }();
+            css.onload = resolve;
+            document.head.appendChild(css);
+        })
+    }
+    
+    if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
+        await loadScript('emulator.js');
+        await loadScript('nipplejs.js');
+        await loadScript('shaders.js');
+        await loadScript('storage.js');
+        await loadScript('gamepad.js');
+        await loadScript('GameManager.js');
+        await loadScript('socket.io.min.js');
+        await loadStyle('emulator.css');
+    } else {
+        await loadScript('emulator.min.js');
+        await loadStyle('emulator.min.css');
+        
+    }
+    const config = {};
+    config.gameUrl = window.EJS_gameUrl;
+    config.dataPath = scriptPath;
+    config.system = window.EJS_core;
+    config.biosUrl = window.EJS_biosUrl;
+    config.gameName = window.EJS_gameName;
+    config.color = window.EJS_color;
+    config.adUrl = window.EJS_AdUrl;
+    config.adMode = window.EJS_AdMode;
+    config.adTimer = window.EJS_AdTimer;
+    config.adSize = window.EJS_AdSize;
+    config.alignStartButton = window.EJS_alignStartButton;
+    config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
+    config.buttonOpts = window.EJS_Buttons;
+    config.volume = window.EJS_volume;
+    config.defaultControllers = window.EJS_defaultControls;
+    config.startOnLoad = window.EJS_startOnLoaded;
+    config.fullscreenOnLoad = window.EJS_fullscreenOnLoaded;
+    config.filePaths = window.EJS_paths;
+    config.loadState = window.EJS_loadStateURL;
+    config.cacheLimit = window.EJS_CacheLimit;
+    config.cheats = window.EJS_cheats;
+    config.defaultOptions = window.EJS_defaultOptions;
+    config.gamePatchUrl = window.EJS_gamePatchUrl;
+    config.gameParentUrl = window.EJS_gameParentUrl;
+    config.netplayUrl = window.EJS_netplayServer;
+    config.gameId = window.EJS_gameID;
+    config.backgroundImg = window.EJS_backgroundImage;
+    config.backgroundBlur = window.EJS_backgroundBlur;
+    config.backgroundColor = window.EJS_backgroundColor;
+    config.controlScheme = window.EJS_controlScheme;
+    
+    if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
+        try {
+            let path;
+            if ('undefined' != typeof EJS_paths && typeof EJS_paths[window.EJS_language] === 'string') {
+                path = EJS_paths[window.EJS_language];
+            } else {
+                path = scriptPath+"localization/"+window.EJS_language+".json";
+            }
+            config.language = window.EJS_language;
+            config.langJson = JSON.parse(await (await fetch(path)).text());
+        } catch(e) {
+            config.langJson = {};
         }
-        reader.readAsArrayBuffer(fileBlob)
-    })
-}
-
-window.EJS_loadStateFromURL = async function() {
-    if (! window.EJS_loadStateURL) {return}
-    var a = await fetch(EJS_loadStateURL)
-    var a = await a.blob()
-    var a = await readAsBufferrr(a)
-    var a = new Uint8Array(a)
-    EJS_loadState(a)
-}
-
-var loader = function(_0x3f3e4d) {
-    var _0x33f0f1 = {};
-
-    function _0x268bfd(_0x6631ec) {
-        if (_0x33f0f1[_0x6631ec]) return _0x33f0f1[_0x6631ec]['exports'];
-        var _0x50c7e4 = _0x33f0f1[_0x6631ec] = {
-            'i': _0x6631ec,
-            'l': !0x1,
-            'exports': {}
-        };
-        return _0x3f3e4d[_0x6631ec]['call'](_0x50c7e4['exports'], _0x50c7e4, _0x50c7e4['exports'], _0x268bfd), _0x50c7e4['l'] = !0x0, _0x50c7e4['exports'];
     }
-    return _0x268bfd['m'] = _0x3f3e4d, _0x268bfd['c'] = _0x33f0f1, _0x268bfd['d'] = function(_0xf1024d, _0x55284e, _0x262414) {
-        _0x268bfd['o'](_0xf1024d, _0x55284e) || Object['defineProperty'](_0xf1024d, _0x55284e, {
-            'enumerable': !0x0,
-            'get': _0x262414
-        });
-    }, _0x268bfd['r'] = function(_0xa8a7e) {
-        'undefined' != typeof Symbol && Symbol['toStringTag'] && Object['defineProperty'](_0xa8a7e, Symbol['toStringTag'], {
-            'value': 'Module'
-        }), Object['defineProperty'](_0xa8a7e, '__esModule', {
-            'value': !0x0
-        });
-    }, _0x268bfd['t'] = function(_0x5518c9, _0x2d1bbc) {
-        if (0x1 & _0x2d1bbc && (_0x5518c9 = _0x268bfd(_0x5518c9)), 0x8 & _0x2d1bbc) return _0x5518c9;
-        if (0x4 & _0x2d1bbc && 'object' == typeof _0x5518c9 && _0x5518c9 && _0x5518c9['__esModule']) return _0x5518c9;
-        var _0x37347f = Object['create'](null);
-        if (_0x268bfd['r'](_0x37347f), Object['defineProperty'](_0x37347f, 'default', {
-                'enumerable': !0x0,
-                'value': _0x5518c9
-            }), 0x2 & _0x2d1bbc && 'string' != typeof _0x5518c9)
-            for (var _0x2b2a4e in _0x5518c9) _0x268bfd['d'](_0x37347f, _0x2b2a4e, function(_0x466464) {
-                return _0x5518c9[_0x466464];
-            }['bind'](null, _0x2b2a4e));
-        return _0x37347f;
-    }, _0x268bfd['n'] = function(_0x25eece) {
-        var _0x3f42e9 = _0x25eece && _0x25eece['__esModule'] ? function() {
-            return _0x25eece['default'];
-        } : function() {
-            return _0x25eece;
-        };
-        return _0x268bfd['d'](_0x3f42e9, 'a', _0x3f42e9), _0x3f42e9;
-    }, _0x268bfd['o'] = function(_0x5570d6, _0x5eaf39) {
-        return Object['prototype']['hasOwnProperty']['call'](_0x5570d6, _0x5eaf39);
-    }, _0x268bfd['p'] = '', _0x268bfd(_0x268bfd['s'] = 0x18b);
-}({
-    395: function(_0x316d65, _0x16e76b, _0x1f8b30) {
-        'use strict';
-        _0x1f8b30['r'](_0x16e76b);
-        var _0x2fbf67, _0x59b8a1, _0x3c68b9, _0x44b634, _0x2766bb, _0x46b578 = _0x1f8b30(0x38);
-        window, _0x2fbf67 = document, _0x59b8a1 = 'script', _0x3c68b9 = [EJS_pathtodata + 'emulator.js?v=', _0x46b578['a']]['join'](''), _0x44b634 = _0x2fbf67['createElement'](_0x59b8a1), _0x2766bb = _0x2fbf67['getElementsByTagName'](_0x59b8a1)[0x0], _0x44b634['async'] = 0x1, _0x44b634['src'] = _0x3c68b9, _0x2766bb['parentNode']['insertBefore'](_0x44b634, _0x2766bb), _0x44b634['onload'] = function() {
-            var _0x316d65 = {};
-            _0x316d65['gameUrl'] = EJS_gameUrl, 'undefined' != typeof EJS_biosUrl && (_0x316d65['biosUrl'] = EJS_biosUrl), 'undefined' != typeof EJS_gameID && (_0x316d65['gameId'] = EJS_gameID), 'undefined' != typeof EJS_gameParentUrl && (_0x316d65['gameParentUrl'] = EJS_gameParentUrl), 'undefined' != typeof EJS_gamePatchUrl && (_0x316d65['gamePatchUrl'] = EJS_gamePatchUrl), _0x316d65['system'] = EJS_core, _0x316d65['onsavestate'] = null, _0x316d65['onloadstate'] = null, 'undefined' != typeof EJS_onSaveState && (_0x316d65['onsavestate'] = EJS_onSaveState), 'undefined' != typeof EJS_onLoadState && (_0x316d65['onloadstate'] = EJS_onLoadState), 'undefined' != typeof EJS_lightgun && (_0x316d65['lightgun'] = EJS_lightgun), 'undefined' != typeof EJS_mouse && (_0x316d65['mouse'] = EJS_mouse), 'undefined' != typeof EJS_multitap && (_0x316d65['multitap'] = EJS_multitap), 'undefined' != typeof EJS_playerName && (_0x316d65['playerName'] = EJS_playerName), 'undefined' != typeof EJS_cheats && (_0x316d65['cheats'] = EJS_cheats), 'undefined' != typeof EJS_color && (_0x316d65['color'] = EJS_color), window['EJS_emulator'] = new EJS(EJS_player, _0x316d65), 'undefined' != typeof EJS_onGameStart && EJS_emulator['on']('start-game', EJS_onGameStart);
-        };
-    },
-    56: function(_0x258889, _0x2c8954, _0x2cdd3a) {
-        'use strict';
-        _0x2c8954['a'] = '0.4.23';
+    
+    window.EJS_emulator = new EmulatorJS(EJS_player, config);
+    window.EJS_adBlocked = (url, del) => window.EJS_emulator.adBlocked(url, del);
+    if (typeof window.EJS_ready === "function") {
+        window.EJS_emulator.on("ready", window.EJS_ready);
     }
-})['default'];
+    if (typeof window.EJS_onGameStart === "function") {
+        window.EJS_emulator.on("start", window.EJS_onGameStart);
+    }
+    if (typeof window.EJS_onLoadState === "function") {
+        window.EJS_emulator.on("load", window.EJS_onLoadState);
+    }
+    if (typeof window.EJS_onSaveState === "function") {
+        window.EJS_emulator.on("save", window.EJS_onSaveState);
+    }
+})();
