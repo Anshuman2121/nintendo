@@ -162,7 +162,7 @@
         core = 'n64';
       } else if (['nds', 'gba', 'gb'].includes(extension)) {
         core = 'gba';
-      } else if (extension === 'md') {
+      } else if (['smd', 'md'].includes(extension)) {
         core = 'segaCD';
         biosUrl = 'games/SegaCDbios.bin';
       } else if (extension === '7z') {
