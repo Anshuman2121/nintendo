@@ -198,17 +198,17 @@ body {
   display: none !important;
 }
 
-#butInstall {
-  color: rgb(206, 100, 35); /* Orange color */
-  text-decoration: none; /* Remove underline */
-  font-size: 1rem; /* Adjust font size as needed */
-  position: absolute;
-  top: 10px;
-  right: 10px;
+.navbar-half-width {
+  /* height: 40px; */
+  font-family: 'Press Start 2P';
+  /* font-size: .8rem; */
+  background-color: rgb(168, 140, 88);
 }
 
-/* Adjust the position for smaller screens if needed */
-@media (max-width: 767px) {
-  #butInstall {
-    top: 60px;
-    right: 10px;
+.display-9 {
+  color: rgb(92, 69, 196);
+  font-weight: bold;
+  font-family: 'Press Start 2P';
+  /* text-shadow: 2px 2px 4px white;
+  letter-spacing: 6px; */
+}
