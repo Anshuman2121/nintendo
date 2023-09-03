@@ -15,7 +15,7 @@ body {
   transition: 0.3s;
   display: inline-block;
   vertical-align: top;
-  background-color: black;
+  background-color: rgb(169, 157, 167);
   color: white;
   margin-bottom: 4rem;
   margin-right: 4rem;
@@ -212,3 +212,18 @@ body {
   /* text-shadow: 2px 2px 4px white;
   letter-spacing: 6px; */
 }
+
+@keyframes flap {
+  0% { transform: rotateY(0deg); }
+  50% { transform: rotateY(180deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+/* .flap {
+  animation: flap 1s linear 1;
+} */
+
+.card-img-top:hover {
+  transform: scale(1.5);
+}
+
