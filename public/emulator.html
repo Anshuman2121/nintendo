@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,28 +11,49 @@
             padding: 0;
             box-sizing: border-box;
         }
-        html, body {
+
+        html,
+        body {
             width: 100%;
             height: 100%;
             background-color: #000;
             overflow: hidden;
         }
+
         #game {
             width: 100%;
             height: 100%;
         }
     </style>
 </head>
+
 <body>
     <div id="game"></div>
-    
+
+    <script>
+        // HOOK: Force preserveDrawingBuffer for WebGL to ensure screenshots can be captured
+        (function () {
+            var oldGetContext = HTMLCanvasElement.prototype.getContext;
+            HTMLCanvasElement.prototype.getContext = function (type, attributes) {
+                if (type === 'webgl' || type === 'webgl2') {
+                    attributes = attributes || {};
+                    // Force preserveDrawingBuffer to true so we can capture canvas via toDataURL
+                    attributes.preserveDrawingBuffer = true;
+                    console.log('WebGL context hooked: preserveDrawingBuffer forced to true');
+                }
+                return oldGetContext.apply(this, [type, attributes]);
+            };
+        })();
+    </script>
+
+
     <script>
         // Parse URL parameters
         const params = new URLSearchParams(window.location.search);
         const gameUrl = params.get('game');
         const core = params.get('core');
         const biosUrl = params.get('bios') || '';
-        
+
         if (!gameUrl) {
             document.body.innerHTML = '<div style="color: white; display: flex; align-items: center; justify-content: center; height: 100%; font-family: sans-serif;"><h1>No game URL provided</h1></div>';
         } else {
@@ -49,17 +71,189 @@
                 if (extension === 'zip') return 'dosbox_pure';
                 return 'nes';
             }
-            
+
+            const finalCore = core || detectCore(gameUrl);
+
             // Configure EmulatorJS
             window.EJS_player = '#game';
             window.EJS_gameUrl = gameUrl;
-            window.EJS_core = core || detectCore(gameUrl);
+            window.EJS_core = finalCore;
             window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
             window.EJS_biosUrl = biosUrl;
             window.EJS_startOnLoaded = true;
             window.EJS_color = '#1e90ff';
             window.EJS_threads = false;
-            
+
+            // Helper function to convert Uint8Array to base64 in chunks (avoids stack overflow)
+            function uint8ArrayToBase64(uint8Array) {
+                const CHUNK_SIZE = 8192;
+                let result = '';
+                for (let i = 0; i < uint8Array.length; i += CHUNK_SIZE) {
+                    const chunk = uint8Array.subarray(i, Math.min(i + CHUNK_SIZE, uint8Array.length));
+                    result += String.fromCharCode.apply(null, chunk);
+                }
+                return btoa(result);
+            }
+
+            // Save State Callback - Called when user creates a save state via EmulatorJS UI
+            window.EJS_onSaveState = function (data) {
+                console.log('=== EJS_onSaveState triggered ===');
+                console.log('Data type:', typeof data);
+
+                try {
+                    let screenshot, state;
+
+                    // Handle different possible data formats
+                    if (Array.isArray(data) && data.length >= 2) {
+                        // Standard format: [screenshot, state]
+                        screenshot = data[0];
+                        state = data[1];
+                        console.log('Format detected: Array [screenshot, state]');
+                    } else if (data && typeof data === 'object' && data.state) {
+                        // EmulatorJS 4.2.3 format: { screenshot, format, state }
+                        screenshot = data.screenshot;
+                        state = data.state;
+                        console.log('Format detected: Object { screenshot, state }');
+                    } else if (data instanceof Uint8Array || data instanceof ArrayBuffer) {
+                        // Just state data, no screenshot
+                        state = data instanceof ArrayBuffer ? new Uint8Array(data) : data;
+                        console.log('Format detected: Raw state data (no screenshot)');
+                    } else {
+                        console.error('Unknown data format:', data);
+                        throw new Error('Unknown save state data format');
+                    }
+
+                    // Ensure we have Uint8Arrays
+                    if (screenshot instanceof ArrayBuffer) screenshot = new Uint8Array(screenshot);
+                    if (state instanceof ArrayBuffer) state = new Uint8Array(state);
+
+                    console.log('State size:', state?.length || 0);
+                    console.log('Screenshot provided by emulator:', screenshot ? `Yes (${screenshot.length} bytes)` : 'No');
+
+                    if (!state || state.length === 0) {
+                        throw new Error('No save state data available');
+                    }
+
+                    // Use placeholder if no screenshot
+                    if (!screenshot || screenshot.length === 0) {
+                        console.warn('No screenshot from EmulatorJS, attempting to capture from canvas...');
+
+                        // Try to find the canvas more aggressively
+                        let canvas = document.querySelector('#game canvas');
+                        if (!canvas) {
+                            // Try to find inside shadow DOM if it exists
+                            const gameDiv = document.querySelector('#game');
+                            if (gameDiv && gameDiv.shadowRoot) {
+                                canvas = gameDiv.shadowRoot.querySelector('canvas');
+                            }
+                        }
+
+                        if (canvas) {
+                            try {
+                                console.log('Canvas found, original dimensions:', canvas.width, 'x', canvas.height);
+
+                                // Create a temporary canvas to resize the screenshot
+                                const tempCanvas = document.createElement('canvas');
+                                const MAX_WIDTH = 320;
+                                const scale = MAX_WIDTH / canvas.width;
+                                const targetHeight = canvas.height * scale;
+
+                                tempCanvas.width = MAX_WIDTH;
+                                tempCanvas.height = targetHeight;
+
+                                const ctx = tempCanvas.getContext('2d');
+                                ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+
+                                const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.7); // Use JPEG with 0.7 quality for smaller size
+                                const base64Data = dataUrl.split(',')[1];
+                                const binaryString = atob(base64Data);
+                                const bytes = new Uint8Array(binaryString.length);
+                                for (let i = 0; i < binaryString.length; i++) {
+                                    bytes[i] = binaryString.charCodeAt(i);
+                                }
+                                screenshot = bytes;
+                                console.log('Screenshot resized and captured, size:', screenshot.length);
+                            } catch (canvasError) {
+                                console.error('Failed to capture canvas screenshot:', canvasError);
+                            }
+                        } else {
+                            console.error('Could not find game canvas element');
+                        }
+
+                        // Fallback to placeholder if canvas capture failed
+                        if (!screenshot || screenshot.length === 0) {
+                            console.warn('Using 1x1 transparent placeholder for screenshot');
+                            screenshot = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0, 0, 31, 21, 196, 137, 0, 0, 0, 10, 73, 68, 65, 84, 120, 156, 99, 0, 1, 0, 0, 5, 0, 1, 13, 10, 45, 180, 0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130]);
+                        }
+                    }
+
+                    // Convert to base64 for transmission using chunked approach
+                    const screenshotBase64 = uint8ArrayToBase64(screenshot);
+                    const stateBase64 = uint8ArrayToBase64(state);
+
+                    console.log('Sending to parent - Screenshot Base64 size:', screenshotBase64.length, 'State Base64 size:', stateBase64.length);
+
+                    // Send to parent window
+                    window.parent.postMessage({
+                        type: 'SAVE_STATE',
+                        payload: {
+                            gameUrl: gameUrl,
+                            core: finalCore,
+                            screenshotData: screenshotBase64,
+                            stateData: stateBase64,
+                            timestamp: Date.now()
+                        }
+                    }, '*');
+                    console.log('Save state message sent to parent');
+                } catch (error) {
+                    console.error('Error processing save state:', error);
+                    window.parent.postMessage({
+                        type: 'SAVE_STATE_ERROR',
+                        payload: { error: error.message }
+                    }, '*');
+                }
+            };
+
+            // Load State Callback - Called when user clicks load state in EmulatorJS UI
+            window.EJS_onLoadState = function () {
+                console.log('Load state request triggered');
+                // Notify parent to show the load state modal
+                window.parent.postMessage({
+                    type: 'LOAD_STATE_REQUEST',
+                    payload: {
+                        gameUrl: gameUrl,
+                        core: finalCore
+                    }
+                }, '*');
+            };
+
+            // Listen for messages from parent window
+            window.addEventListener('message', function (event) {
+                // Handle load state data from parent
+                if (event.data && event.data.type === 'LOAD_STATE_DATA') {
+                    try {
+                        const stateBase64 = event.data.payload.stateData;
+                        // Convert base64 back to Uint8Array
+                        const binaryString = atob(stateBase64);
+                        const len = binaryString.length;
+                        const bytes = new Uint8Array(len);
+                        for (let i = 0; i < len; i++) {
+                            bytes[i] = binaryString.charCodeAt(i);
+                        }
+
+                        // Load the state into the emulator
+                        if (window.EJS_emulator && window.EJS_emulator.gameManager) {
+                            window.EJS_emulator.gameManager.loadState(bytes);
+                            console.log('State loaded successfully');
+                        } else {
+                            console.error('Emulator not ready for state load');
+                        }
+                    } catch (error) {
+                        console.error('Error loading state:', error);
+                    }
+                }
+            });
+
             // Load EmulatorJS
             const script = document.createElement('script');
             script.src = 'https://cdn.emulatorjs.org/4.2.3/data/loader.js';
@@ -67,4 +261,5 @@
         }
     </script>
 </body>
+
 </html>

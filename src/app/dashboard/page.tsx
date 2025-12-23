@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPlayTime, formatRelativeTime } from '@/lib/formatTime';
 import { fetchAllGames, GameMetadata } from '@/lib/gameUtils';
-import { Gamepad2, Clock, Calendar, Trophy, ArrowLeft, Loader2, Play } from 'lucide-react';
+import { Gamepad2, Clock, Calendar, Trophy, ArrowLeft, Loader2, Play, Save } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -17,12 +17,25 @@ interface GameSession {
     created_at: string;
 }
 
+interface SaveState {
+    id: string;
+    gameId: string;
+    gameName: string;
+    slotNumber: number;
+    screenshotUrl: string;
+    core: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 interface StatsResponse {
     success: boolean;
     email: string;
     totalPlayTime: number;
     gamesPlayed: number;
+    totalSaves: number;
     sessions: GameSession[];
+    saves: SaveState[];
     message?: string;
 }
 
@@ -127,7 +140,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Stats Overview Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                     {/* Total Play Time */}
                     <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
                         <div className="flex items-center gap-4">
@@ -175,6 +188,83 @@ export default function DashboardPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* Total Saves */}
+                    <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                                <Save className="w-7 h-7 text-white" />
+                            </div>
+                            <div>
+                                <p className="text-gray-400 text-sm">Total Saves</p>
+                                <p className="text-2xl font-bold text-white">
+                                    {loading ? '...' : stats?.totalSaves || 0}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Recent Saves Section */}
+                <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden mb-12">
+                    <div className="p-6 border-b border-white/10">
+                        <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                            <Save className="w-6 h-6 text-orange-400" />
+                            Recent Saves
+                        </h2>
+                    </div>
+
+                    {loading ? (
+                        <div className="p-12 text-center">
+                            <Loader2 className="w-8 h-8 text-orange-500 animate-spin mx-auto mb-4" />
+                            <p className="text-gray-400">Loading saved games...</p>
+                        </div>
+                    ) : stats?.saves && stats.saves.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+                            {stats.saves.slice(0, 4).map((save) => { // Display limited recent saves
+                                const details = gameMetadata.get(save.gameName) || {
+                                    gameUrl: `${save.gameId}.${save.core === 'nes' ? 'nes' : 'zip'}`,
+                                    title: save.gameName,
+                                    platform: 'Unknown',
+                                    year: 'Unknown',
+                                    slug: '',
+                                    image: ''
+                                } as GameMetadata;
+
+                                return (
+                                    <div key={save.id} className="bg-black/40 rounded-xl overflow-hidden group hover:ring-2 hover:ring-orange-500 transition-all">
+                                        <div className="aspect-video relative">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={save.screenshotUrl}
+                                                alt={`Slot ${save.slotNumber}`}
+                                                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                            />
+                                            <div className="absolute top-2 left-2 bg-orange-600 text-white text-xs font-bold px-2 py-1 rounded">
+                                                Slot {save.slotNumber}
+                                            </div>
+                                            <Link
+                                                href={`/play?game=${encodeURIComponent(details.gameUrl)}`}
+                                                className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <div className="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                                    <Play className="w-6 h-6 text-white ml-1" />
+                                                </div>
+                                            </Link>
+                                        </div>
+                                        <div className="p-3">
+                                            <h3 className="font-semibold text-white truncate text-sm mb-1">{save.gameName}</h3>
+                                            <p className="text-xs text-gray-500">{formatRelativeTime(save.updatedAt)}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="p-8 text-center text-gray-400 text-sm">
+                            No save states found. Play a game and save your progress!
+                        </div>
+                    )}
                 </div>
 
                 {/* Games List */}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogIn, LogOut, User, Loader2, X, LayoutDashboard } from 'lucide-react';
+import { LogIn, LogOut, User, Loader2, X, LayoutDashboard, Mail } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -145,6 +145,14 @@ export default function AuthButton() {
                     >
                         <LayoutDashboard size={18} />
                         <span>Dashboard</span>
+                    </Link>
+                    <Link
+                        href="/contact"
+                        onClick={() => setDropdownOpen(false)}
+                        className="w-full px-4 py-3 flex items-center gap-2 text-white hover:bg-white/10 transition-colors border-b border-purple-500/20"
+                    >
+                        <Mail size={18} />
+                        <span>Contact Us</span>
                     </Link>
                     <button
                         onClick={() => {

@@ -79,6 +79,12 @@ export default function Header() {
     }, [isGamePage]);
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+        // Allow default navigation for actual pages (like /contact)
+        if (href.startsWith('/')) {
+            setMobileMenuOpen(false);
+            return;
+        }
+
         e.preventDefault();
 
         // If not on home page, navigate home first
@@ -106,7 +112,7 @@ export default function Header() {
                 }
             }}
             className={`fixed z-50 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSqueezed
-                ? 'top-4 left-4 w-14 h-14 bg-black/40 backdrop-blur-md rounded-full shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-purple-500/30 overflow-hidden cursor-pointer hover:bg-black/60'
+                ? 'top-4 left-4 w-auto h-auto bg-transparent border-none shadow-none cursor-pointer'
                 : `top-0 left-0 right-0 ${scrolled ? 'bg-black/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(139,92,246,0.3)] border-b border-purple-500/30' : 'bg-transparent'}`
                 }`}
         >
@@ -122,9 +128,9 @@ export default function Header() {
                     }}
                     className={`flex items-center gap-2 group transition-all duration-300 ${isSqueezed ? 'p-0' : ''}`}
                 >
-                    <div className={`relative flex items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300 ${isSqueezed ? 'w-8 h-8 group-hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]' : 'w-10 h-10 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.7)]'
+                    <div className={`relative flex items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 shadow-[0_0_20px_rgba(139,92,246,0.5)] transition-all duration-300 ${isSqueezed ? 'w-5 h-5 group-hover:shadow-[0_0_10px_rgba(139,92,246,0.5)]' : 'w-10 h-10 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.7)]'
                         }`}>
-                        <Gamepad2 className={`${isSqueezed ? 'w-5 h-5' : 'w-6 h-6'} text-white`} />
+                        <Gamepad2 className={`${isSqueezed ? 'w-3 h-3' : 'w-6 h-6'} text-white`} />
                     </div>
 
                     {/* Hide Text when squeezed */}

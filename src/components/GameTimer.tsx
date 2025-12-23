@@ -29,7 +29,7 @@ export default function GameTimer({ startTime }: GameTimerProps) {
     if (!isVisible) {
         return (
             <div
-                className="absolute top-0 right-0 p-2 cursor-pointer opacity-0 hover:opacity-100 transition-opacity z-[100]"
+                className="absolute top-3 left-1/2 -translate-x-1/2 lg:top-4 lg:right-4 lg:left-auto lg:translate-x-0 p-2 cursor-pointer opacity-0 hover:opacity-100 transition-opacity z-[100]"
                 onClick={() => setIsVisible(true)}
                 title="Show Timer"
             >
@@ -42,11 +42,11 @@ export default function GameTimer({ startTime }: GameTimerProps) {
 
     return (
         <div
-            className="absolute top-4 right-4 z-[100] cursor-pointer group"
+            className="absolute z-[100] cursor-pointer group top-1 left-1/2 -translate-x-1/2 lg:top-4 lg:right-4 lg:left-auto lg:translate-x-0"
             onClick={() => setIsVisible(false)}
             title="Click to hide"
         >
-            <div className="bg-black/80 backdrop-blur-md border border-purple-500/30 rounded-full px-3 py-1 text-xs font-mono text-cyan-400 group-hover:bg-black/90 group-hover:border-purple-500/50 transition-all shadow-[0_0_10px_rgba(0,0,0,0.5)]">
+            <div className="px-3 py-1 text-[10px] lg:text-xs font-mono text-cyan-400 font-bold drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] opacity-60 hover:opacity-100 transition-opacity">
                 {formatPlayTime(currentTime)}
             </div>
         </div>
