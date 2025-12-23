@@ -24,15 +24,16 @@ function detectCore(gameUrl: string): { core: string; biosUrl?: string } {
     } else if (['gb', 'gbc'].includes(extension)) {
         return { core: 'gb' };
     } else if (['smd', 'md'].includes(extension)) {
-        return { core: 'segaCD', biosUrl: '/games/SegaCDbios.bin' };
+        return { core: 'segaCD', biosUrl: '/bios/SegaCDbios.bin' };
     } else if (extension === '7z') {
-        return { core: 'psx', biosUrl: '/games/psxbios.7z' };
+        return { core: 'psx', biosUrl: '/bios/psxbios.7z' };
     } else if (extension === 'zip') {
         return { core: 'dosbox_pure' };
     }
 
     return { core: 'nes' }; // Default fallback
 }
+
 
 // Cleanup function to remove all EmulatorJS globals and elements
 function cleanupEmulator() {
@@ -54,7 +55,12 @@ function cleanupEmulator() {
     // Clear all EJS globals
     const ejsKeys = Object.keys(win).filter(key => key.startsWith('EJS_'));
     ejsKeys.forEach(key => {
-        delete win[key];
+        try {
+            delete win[key];
+        } catch {
+            // Some properties like EJS_Runtime may be non-configurable
+            win[key] = undefined;
+        }
     });
 
     // Remove any scripts added by the emulator
@@ -92,18 +98,18 @@ export default function Emulator({ gameUrl, core: propCore, biosUrl: propBiosUrl
         win.EJS_player = '#game';
         win.EJS_gameUrl = absoluteGameUrl;
         win.EJS_core = finalCore;
-        win.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+        win.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
         win.EJS_biosUrl = finalBiosUrl;
         win.EJS_startOnLoaded = true; // Auto start
         win.EJS_color = '#1e90ff'; // Optional: customize theme color
-        win.EJS_threads = true; // Enable threading (required for dosbox_pure)
+        win.EJS_threads = false; // Disable threads to avoid strict COOP requirements (fixes Google Auth)
 
 
         console.log('Emulator: Configuration set, loading script...');
 
         // Create and load the EmulatorJS loader script
         const script = document.createElement('script');
-        script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+        script.src = 'https://cdn.emulatorjs.org/4.2.3/data/loader.js';
         script.async = true;
 
         script.onload = () => {

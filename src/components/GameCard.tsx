@@ -33,6 +33,7 @@ export default function GameCard({ title, image, hoverImage, gameUrl }: GameCard
                     fill
                     className={`object-cover transition-all duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                    unoptimized
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>

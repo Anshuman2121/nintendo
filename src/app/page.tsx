@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import ParticleBackground from '@/components/ParticleBackground';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import GameSection from '@/components/GameSection';
 
@@ -8,7 +7,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white relative">
       <ParticleBackground />
-      <Header />
 
       {/* Main Content */}
       <main className="pt-20">
