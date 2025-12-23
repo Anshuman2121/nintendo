@@ -140,8 +140,6 @@ export default function AuthButton() {
                     </div>
                     <Link
                         href="/dashboard"
-                        target="_blank"
-                        rel="noopener noreferrer"
                         onClick={() => setDropdownOpen(false)}
                         className="w-full px-4 py-3 flex items-center gap-2 text-white hover:bg-white/10 transition-colors border-b border-purple-500/20"
                     >
