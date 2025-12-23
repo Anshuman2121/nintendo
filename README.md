@@ -1,81 +1,36 @@
-<h1>Link to Website</h1>
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-<h3><a href="https://anshuman2121.github.io/nintendo/">anshuman2121.github.io/nintendo</a></h3>
+## Getting Started
 
+First, run the development server:
 
-A javascript emulator for nes, snes, and more!
-The BEST emulator on the internet. No ads and self hosted!
-
-
-
-
-
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
-EJS_gameName = "name of game";
-```
-When the user saves a state, the state will be saved with the name `name of game.state`
 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-<h1>Supported systems!</h1>
-<h2>NES / Famicom</h2>
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-Code example
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-```
-<div style="width:640px;height:480px;max-width:100%">
-  <div id="game"></div>
-</div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Famicom Disk System bios
-    EJS_gameUrl = ''; // Url to Game rom
-    EJS_core = 'nes';
-    EJS_lightgun = false; // Lightgun
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
-```
-Your rom MUST have one of the following extensions
+## Learn More
 
-```
-.fds
-.nes
-.unif
-.unf
-```
-You can find the famicon BIOS by looking up the md5 sum which is `ca30b50f880eb660a320674ed365ef7a`
-<br><br>
-<h2>SNES</h2>
+To learn more about Next.js, take a look at the following resources:
 
-Code Example
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
-    EJS_core = 'snes';
-    EJS_mouse = false; // SNES Mouse
-    EJS_multitap = false; // SNES Multitap
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
-```
-Your rom MUST have one of the following extensions
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-```
-.smc
-.fig
-.sfc
-.gd3
-.gd7
-.dx2
-.bsx
-.swc
-```
-There is no bios for this system
-<br><br>
+## Deploy on Vercel
 
-<br><br>
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
