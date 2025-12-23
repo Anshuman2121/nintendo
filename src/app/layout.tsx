@@ -3,6 +3,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { GameplayProvider } from "@/contexts/GameplayContext";
 import Header from "@/components/Header";
 
 const inter = Inter({
@@ -24,10 +25,13 @@ export default function RootLayout({
       </head>
       <body className="antialiased bg-black">
         <AuthProvider>
-          <Header />
-          {children}
+          <GameplayProvider>
+            <Header />
+            {children}
+          </GameplayProvider>
         </AuthProvider>
       </body>
     </html>
   );
 }
+

@@ -4,3 +4,8 @@ account_id = "9f65ad773ff97be2a9849e83c4604aad"
 [[r2_buckets]]
 binding = "GAMES"
 bucket_name = "nintendo"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nintendo"
+database_id = "0d8e2083-2fc7-4b93-8514-08ec44acacb3"

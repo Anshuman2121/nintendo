@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogIn, LogOut, User, Loader2, X } from 'lucide-react';
+import { LogIn, LogOut, User, Loader2, X, LayoutDashboard } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function AuthButton() {
     const { user, loading, error, signInWithGoogle, signOut, clearError } = useAuth();
@@ -137,6 +138,16 @@ export default function AuthButton() {
                             </div>
                         </div>
                     </div>
+                    <Link
+                        href="/dashboard"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setDropdownOpen(false)}
+                        className="w-full px-4 py-3 flex items-center gap-2 text-white hover:bg-white/10 transition-colors border-b border-purple-500/20"
+                    >
+                        <LayoutDashboard size={18} />
+                        <span>Dashboard</span>
+                    </Link>
                     <button
                         onClick={() => {
                             signOut();

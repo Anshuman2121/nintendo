@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
+import { useGameplay } from '@/contexts/GameplayContext';
+import GameTimer from './GameTimer';
 
 interface EmulatorProps {
     gameUrl: string;
@@ -34,118 +36,49 @@ function detectCore(gameUrl: string): { core: string; biosUrl?: string } {
     return { core: 'nes' }; // Default fallback
 }
 
+export default function Emulator({ gameUrl, core: propCore, biosUrl: propBiosUrl }: EmulatorProps) {
+    const iframeRef = useRef<HTMLIFrameElement>(null);
+    const { startSession, endSession } = useGameplay();
 
-// Cleanup function to remove all EmulatorJS globals and elements
-function cleanupEmulator() {
-    const win = window as unknown as Record<string, unknown>;
+    // Build the iframe URL with game parameters
+    const { core: detectedCore, biosUrl: detectedBiosUrl } = detectCore(gameUrl);
+    const finalCore = propCore || detectedCore;
+    const finalBiosUrl = propBiosUrl || detectedBiosUrl || '';
 
-    // Remove the emulator instance
-    if (win.EJS_emulator) {
-        try {
-            // Try to properly destroy the emulator if it has a destroy method
-            const emulator = win.EJS_emulator as { destroy?: () => void };
-            if (typeof emulator.destroy === 'function') {
-                emulator.destroy();
-            }
-        } catch (e) {
-            console.warn('Error destroying emulator:', e);
-        }
+    // Ensure gameUrl is properly encoded
+    const params = new URLSearchParams({
+        game: gameUrl,
+        core: finalCore,
+    });
+    if (finalBiosUrl) {
+        params.set('bios', finalBiosUrl);
     }
 
-    // Clear all EJS globals
-    const ejsKeys = Object.keys(win).filter(key => key.startsWith('EJS_'));
-    ejsKeys.forEach(key => {
-        try {
-            delete win[key];
-        } catch {
-            // Some properties like EJS_Runtime may be non-configurable
-            win[key] = undefined;
-        }
-    });
-
-    // Remove any scripts added by the emulator
-    const scripts = document.querySelectorAll('script[src*="/data/"]');
-    scripts.forEach(script => script.remove());
-
-    // Remove any styles added by the emulator
-    const styles = document.querySelectorAll('link[href*="/data/"]');
-    styles.forEach(style => style.remove());
-}
-
-export default function Emulator({ gameUrl, core: propCore, biosUrl: propBiosUrl }: EmulatorProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const scriptRef = useRef<HTMLScriptElement | null>(null);
-    const initializedRef = useRef(false);
-
-    const initEmulator = useCallback(() => {
-        if (initializedRef.current || !containerRef.current) return;
-
-        const { core: detectedCore, biosUrl: detectedBiosUrl } = detectCore(gameUrl);
-        const finalCore = propCore || detectedCore;
-        const finalBiosUrl = propBiosUrl || detectedBiosUrl || '';
-
-        // Ensure gameUrl has leading slash for absolute path if it is local
-        let absoluteGameUrl = gameUrl;
-        if (!gameUrl.startsWith('http') && !gameUrl.startsWith('/')) {
-            absoluteGameUrl = '/' + gameUrl;
-        }
-        console.log('Emulator: Loading game from URL:', absoluteGameUrl);
-        console.log('Emulator: Detected core:', finalCore);
-
-        const win = window as unknown as Record<string, unknown>;
-
-        // Set EmulatorJS globals BEFORE loading the script
-        win.EJS_player = '#game';
-        win.EJS_gameUrl = absoluteGameUrl;
-        win.EJS_core = finalCore;
-        win.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
-        win.EJS_biosUrl = finalBiosUrl;
-        win.EJS_startOnLoaded = true; // Auto start
-        win.EJS_color = '#1e90ff'; // Optional: customize theme color
-        win.EJS_threads = false; // Disable threads to avoid strict COOP requirements (fixes Google Auth)
-
-
-        console.log('Emulator: Configuration set, loading script...');
-
-        // Create and load the EmulatorJS loader script
-        const script = document.createElement('script');
-        script.src = 'https://cdn.emulatorjs.org/4.2.3/data/loader.js';
-        script.async = true;
-
-        script.onload = () => {
-            console.log('Emulator: Loader script loaded successfully');
-        };
-
-        script.onerror = () => {
-            console.error('Failed to load EmulatorJS loader script');
-        };
-
-        document.body.appendChild(script);
-        scriptRef.current = script;
-        initializedRef.current = true;
-    }, [gameUrl, propCore, propBiosUrl]);
+    const iframeSrc = `/emulator.html?${params.toString()}`;
 
     useEffect(() => {
-        // Small delay to ensure DOM is fully ready
-        const timer = setTimeout(() => {
-            initEmulator();
-        }, 100);
+        console.log('Emulator: Loading game via iframe:', gameUrl);
+        console.log('Emulator: Core:', finalCore);
+
+        // Start gameplay session tracking
+        startSession(gameUrl);
 
         return () => {
-            clearTimeout(timer);
-            // Full cleanup on unmount
-            cleanupEmulator();
-            initializedRef.current = false;
+            // End gameplay session when unmounting
+            endSession();
         };
-    }, [initEmulator]);
+    }, [gameUrl, finalCore, startSession, endSession]);
 
     return (
-        <div className="w-full h-full min-h-screen bg-black flex items-center justify-center">
-            <div
-                ref={containerRef}
-                id="game"
-                className="w-full h-full"
+        <div className="w-full h-full min-h-screen bg-black flex items-center justify-center relative">
+            <GameTimer startTime={Date.now()} />
+            <iframe
+                ref={iframeRef}
+                src={iframeSrc}
+                className="w-full h-full border-0"
                 style={{ minHeight: '100vh', minWidth: '100vw' }}
+                allow="autoplay; fullscreen; gamepad"
+                title="Game Emulator"
             />
         </div>
     );

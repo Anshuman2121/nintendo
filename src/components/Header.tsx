@@ -81,8 +81,8 @@ export default function Header() {
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
         e.preventDefault();
 
-        // If on game page, navigate home first
-        if (isGamePage) {
+        // If not on home page, navigate home first
+        if (pathname !== '/') {
             window.location.href = '/' + href;
             return;
         }
@@ -106,7 +106,7 @@ export default function Header() {
                 }
             }}
             className={`fixed z-50 transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSqueezed
-                ? 'top-4 right-4 w-14 h-14 bg-black/40 backdrop-blur-md rounded-full shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-purple-500/30 overflow-hidden cursor-pointer hover:bg-black/60'
+                ? 'top-4 left-4 w-14 h-14 bg-black/40 backdrop-blur-md rounded-full shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-purple-500/30 overflow-hidden cursor-pointer hover:bg-black/60'
                 : `top-0 left-0 right-0 ${scrolled ? 'bg-black/80 backdrop-blur-xl shadow-[0_4px_30px_rgba(139,92,246,0.3)] border-b border-purple-500/30' : 'bg-transparent'}`
                 }`}
         >

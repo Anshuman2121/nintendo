@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo World! - Playing Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden;
+        }
+        #game {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="game"></div>
+    
+    <script>
+        // Parse URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const gameUrl = params.get('game');
+        const core = params.get('core');
+        const biosUrl = params.get('bios') || '';
+        
+        if (!gameUrl) {
+            document.body.innerHTML = '<div style="color: white; display: flex; align-items: center; justify-content: center; height: 100%; font-family: sans-serif;"><h1>No game URL provided</h1></div>';
+        } else {
+            // Detect core from extension if not provided
+            function detectCore(url) {
+                const extension = url.split('.').pop().toLowerCase();
+                if (['fds', 'nes', 'unif', 'unf'].includes(extension)) return 'nes';
+                if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) return 'snes';
+                if (['z64', 'n64'].includes(extension)) return 'n64';
+                if (['nds'].includes(extension)) return 'nds';
+                if (['gba'].includes(extension)) return 'gba';
+                if (['gb', 'gbc'].includes(extension)) return 'gb';
+                if (['smd', 'md'].includes(extension)) return 'segaCD';
+                if (extension === '7z') return 'psx';
+                if (extension === 'zip') return 'dosbox_pure';
+                return 'nes';
+            }
+            
+            // Configure EmulatorJS
+            window.EJS_player = '#game';
+            window.EJS_gameUrl = gameUrl;
+            window.EJS_core = core || detectCore(gameUrl);
+            window.EJS_pathtodata = 'https://cdn.emulatorjs.org/4.2.3/data/';
+            window.EJS_biosUrl = biosUrl;
+            window.EJS_startOnLoaded = true;
+            window.EJS_color = '#1e90ff';
+            window.EJS_threads = false;
+            
+            // Load EmulatorJS
+            const script = document.createElement('script');
+            script.src = 'https://cdn.emulatorjs.org/4.2.3/data/loader.js';
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>
